@@ -1,0 +1,24 @@
+{
+  "model_type": "PVConditionNet (8\u219224\u21925)",
+  "version": "1.0.0",
+  "features": [
+    "irradiance",
+    "voltage",
+    "current",
+    "power",
+    "temperature",
+    "mppt_reference_voltage",
+    "efficiency",
+    "power_deviation"
+  ],
+  "class_mapping": {
+    "0": "Normal",
+    "1": "Low Irradiance",
+    "2": "Partial Shading",
+    "3": "Soiling/Dust",
+    "4": "Possible Fault"
+  },
+  "dataset_type": "reproducible synthetic PV simulation",
+  "created_utc": "2026-08-23T19:30:29.102698+00:00",
+  "disclaimer": "Synthetic metrics do not represent field performance."
+}
