@@ -5,3 +5,4 @@ torch
 opencv-python
 streamlit
 pytest
+matplotlib
