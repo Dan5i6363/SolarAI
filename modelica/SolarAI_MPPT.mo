@@ -17,7 +17,7 @@ package SolarAI_MPPT
       Placement(transformation(extent = {{60, 60}, {80, 80}})));
     PhotoVoltaics.Sources.Electrical.IdealBattery battery(ns = 4, np = 1, V1Cell = 14, V0Cell = 11, ECell = 12*100*3600, allowOvercharge = true, allowUndercharge = true, ViniCell = 11) annotation(
       Placement(transformation(extent = {{-10, -10}, {10, 10}}, rotation = 270, origin = {80, 0})));
-    PhotoVoltaics.Sources.Irradiance.Irradiance irradiance annotation(
+    PhotoVoltaics.Sources.Irradiance.Irradiance irradiance(gamma = 0.20943951023931953)  annotation(
       Placement(transformation(extent = {{-90, -10}, {-70, 10}})));
   equation
     connect(groundDC.p, module.n) annotation(
