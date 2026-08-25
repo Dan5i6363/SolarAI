@@ -13,12 +13,12 @@ import numpy as np
 import pandas as pd
 
 FEATURE_ALIASES = {
-    "irradiance": ("irradiance", "solarirradiance", "g", "gpoa"),
-    "voltage": ("pvvoltage", "voltage", "modulev", "vdc", "v"),
-    "current": ("pvcurrent", "current", "modulei", "i"),
-    "power": ("pvpower", "power", "modulepower", "p"),
-    "mppt_reference_voltage": ("mpptreferencevoltage", "vref", "mpptvref", "vdcRef".lower()),
-    "temperature": ("temperature", "moduletemperature", "celltemperature", "t"),
+    "irradiance": ("irradianceirradiance", "variableirradiance", "solarirradiance", "irradiance", "gpoa", "g"),
+    "voltage": ("modulev", "pvvoltage", "voltage", "vdc", "v"),
+    "current": ("modulei", "pvcurrent", "current", "i"),
+    "power": ("modulepower", "powersensorpower", "pvpower", "power", "p"),
+    "mppt_reference_voltage": ("mptrackervref", "mpptreferencevoltage", "mpptvref", "vdcref", "vref"),
+    "temperature": ("moduletemperature", "celltemperature", "modulet", "temperature", "cellt", "temp"),
 }
 
 
@@ -50,18 +50,31 @@ def map_features(frame: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, str], lis
     """Return canonical PV features, selected source columns, and unused columns."""
     normalized = {_normalize(column): column for column in frame.columns}
     mapping: dict[str, str] = {}
+
+    # Pass 1: exact normalized match with alias
     for feature, aliases in FEATURE_ALIASES.items():
-        match = next((normalized[alias] for alias in aliases if alias in normalized), None)
-        if match is None:
-            match = next((column for norm, column in normalized.items() if any(alias in norm for alias in aliases)), None)
-        if match is not None:
-            mapping[feature] = match
+        for alias in aliases:
+            if alias in normalized:
+                mapping[feature] = normalized[alias]
+                break
+
+    # Pass 2: substring alias match in priority order (excluding overly broad or heat-port matches)
+    for feature, aliases in FEATURE_ALIASES.items():
+        if feature not in mapping:
+            for alias in aliases:
+                if len(alias) <= 1:
+                    continue
+                match = next((column for norm, column in normalized.items() if alias in norm and not norm.endswith("qflow")), None)
+                if match is not None:
+                    mapping[feature] = match
+                    break
+
     required = {"irradiance", "voltage", "current", "power", "mppt_reference_voltage"}
     missing = required - mapping.keys()
     if missing:
         raise ValueError(f"Could not map required OpenModelica features: {sorted(missing)}. Available columns: {list(frame.columns)}")
     result = pd.DataFrame({feature: pd.to_numeric(frame[column], errors="coerce") for feature, column in mapping.items()})
-    if "temperature" not in result:
+    if "temperature" not in result or result["temperature"].isna().all():
         result["temperature"] = 25.0
     result = result.dropna().reset_index(drop=True)
     return result, mapping, [column for column in frame.columns if column not in mapping.values()]
