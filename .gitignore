@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .vscode/
 .env
+.pytest_cache/
+
+# OpenModelica build directories & generated simulation results
+build/
+omc_test/
+data/*_simulation_res.csv

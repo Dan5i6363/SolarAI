@@ -17,6 +17,7 @@ class Settings:
     mode: str = _env("SOLARAI_MODE", "demo")
     model_path: Path = PROJECT_ROOT / _env("SOLARAI_MODEL_PATH", "models/pv_condition_classifier.pt")
     dataset_path: Path = PROJECT_ROOT / _env("SOLARAI_DATASET_PATH", "data/synthetic_pv_dataset.csv")
+    omc_build_dir: Path = PROJECT_ROOT / _env("SOLARAI_OMC_BUILD_DIR", "build/openmodelica")
     camera_source: str = _env("SOLARAI_CAMERA_SOURCE", "demo")
     serial_port: str = _env("SOLARAI_SERIAL_PORT", "")
     serial_baudrate: int = int(_env("SOLARAI_SERIAL_BAUDRATE", "115200"))
